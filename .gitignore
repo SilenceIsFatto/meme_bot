@@ -1,0 +1,15 @@
+*.log
+*.bat
+*.txt
+*.on
+*.json
+
+bot_token.py
+
+.vscode/
+logs/
+__pycache__/
+
+json/memes.json
+json/settings.json
+json/seen.json
