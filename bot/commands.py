@@ -42,7 +42,7 @@ def commands_init(client):
 
         await interaction.response.send_message(f"Synced commands.")
 
-    @tree.command(name="update_subreddit", description="Refreshes posts from a subreddit.", guild=guild_id)
+    @tree.command(name="update_subreddit", description="Refreshes posts from a subreddit. Use the subreddit name, not the whole link!", guild=guild_id)
     async def update_subreddit(interaction: discord.Interaction, subreddit_name: str):
 
         subreddit_added = subreddit_supported(guild_id=(interaction.guild.id), subreddit_name=subreddit_name)
@@ -50,18 +50,24 @@ def commands_init(client):
         if (not subreddit_added):
             raise Exception("This subreddit hasn't been added.")
 
+        if (["https://", "reddit.com"] in subreddit_name):
+            raise Exception("Don't give the whole link, only provide the subreddit name!")
+
         subreddit = start_reddit_instance(subreddit_name=subreddit_name)
         get_submissions_thread(subreddit=subreddit)
 
         await interaction.response.send_message(f"Updating memes.json with new subreddit posts: {subreddit}")
 
-    @tree.command(name="add_subreddit", description="Adds a new subreddit.", guild=guild_id)
+    @tree.command(name="add_subreddit", description="Adds a new subreddit. Use the subreddit name, not the whole link!", guild=guild_id)
     async def add_subreddit(interaction: discord.Interaction, subreddit_name: str):
 
         subreddit_added = subreddit_supported(guild_id=(interaction.guild.id), subreddit_name=subreddit_name)
 
         if (subreddit_added):
             raise Exception("This subreddit has already been added.")
+
+        if (["https://", "reddit.com"] in subreddit_name):
+            raise Exception("Don't give the whole link, only provide the subreddit name!")
 
         guild_id = str(interaction.guild.id)
 
