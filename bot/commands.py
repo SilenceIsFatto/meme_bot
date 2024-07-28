@@ -35,6 +35,9 @@ def commands_init(client):
     @tree.command(name="sync_commands", description="Syncs the command tree.", guild=guild_id)
     async def sync_commands(interaction: discord.Interaction, guild_only: bool = False):
 
+        if (interaction.user.id not in [474144080801169418, 705425476142891038]):
+            raise Exception("You can't use this command.")
+
         if (guild_only):
             await tree.sync(guild=guild_id)
         else:
