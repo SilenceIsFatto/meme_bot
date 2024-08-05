@@ -29,7 +29,7 @@ def commands_init(client):
 
     tree = app_commands.CommandTree(client)
 
-    commands_user(client=client, tree=tree)
+    # commands_user(client=client, tree=tree)
 
     @tree.command(name="sync_commands", description="Syncs the command tree.", guild=guild_id)
     async def sync_commands(interaction: discord.Interaction, guild_only: bool = False):
@@ -132,6 +132,8 @@ def commands_init(client):
         await guild_reddit_embed_send(subreddit_name=subreddit_name, interaction=interaction, random_meme=random_meme, meme_link=meme_link)
 
     @tree.command(name="cat_meme", description="Sends a cat meme.", guild=guild_id)
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True) 
     async def cat_meme(interaction: discord.Interaction):
 
         subreddit_name = "Catmemes"
