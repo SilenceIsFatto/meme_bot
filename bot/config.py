@@ -59,6 +59,8 @@ guild_error_notmoderator = "You are not allowed to use this command."
 
 guild_channel_meme = 1262370726279647293
 
+guild_reddit_default_subreddits = ["Catmemes", "dogmemes", "capybara"]
+
 def guild_reddit_link(random_meme, meme_link):
     url = f"[{random_meme[1]}]({random_meme[2]}) - [Link](<{meme_link}>)"
 

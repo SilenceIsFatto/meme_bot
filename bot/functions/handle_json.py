@@ -7,6 +7,8 @@ sys.path.append("../bot")
 from file_operations import write_to_file
 from functions.log import log_message
 
+from config import guild_reddit_default_subreddits
+
 # from common import initialise_memes
 
 path = os.getcwd()
@@ -26,7 +28,7 @@ def json_exists(file):
         dict = {"init": {"title": "", "url": "", "seen": True}}
 
     if (file == "settings"):
-        dict = {"subreddit": "Catmemes", "subreddits": ["Catmemes", "dogmemes", "capybara"]}
+        dict = {"subreddit": "Catmemes", "subreddits": guild_reddit_default_subreddits}
 
     if (file == "seen"):
         dict = {"init": {"seen": True}}

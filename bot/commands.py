@@ -11,7 +11,7 @@ import os
 
 sys.path.append(f'../cat-meme-bot')
 
-from config import guild_id, guild_reddit_link, guild_reddit_embed_send
+from config import guild_id, guild_reddit_link, guild_reddit_embed_send, guild_reddit_default_subreddits
 
 from functions.handle_json import read_json
 from functions.handle_json import update_json
@@ -44,8 +44,8 @@ def commands_init(client):
 
         await interaction.response.send_message(f"Synced commands.")
 
-    @tree.command(name="update_subreddit", description="Refreshes posts from a subreddit. Use the subreddit name, not the whole link!", guild=guild_id)
-    async def update_subreddit(interaction: discord.Interaction, subreddit_name: str):
+    @tree.command(name="subreddit_update", description="Refreshes posts from a subreddit. Use the subreddit name, not the whole link!")
+    async def subreddit_update(interaction: discord.Interaction, subreddit_name: str):
 
         subreddit_added = subreddit_supported(guild_id=(interaction.guild.id), subreddit_name=subreddit_name)
 
@@ -60,8 +60,15 @@ def commands_init(client):
 
         await interaction.response.send_message(f"Updating memes.json with new subreddit posts: {subreddit}")
 
-    @tree.command(name="remove_subreddit", description="Removes a subreddit. Use the subreddit name, not the whole link!", guild=guild_id)
-    async def remove_subreddit(interaction: discord.Interaction, subreddit_name: str):
+    @tree.command(name="subreddit_list", description="Lists this servers supported subreddits.")
+    async def subreddit_list(interaction: discord.Interaction):
+
+        subreddits = get_subreddits(guild_id=(interaction.guild.id))
+
+        await interaction.response.send_message(f"Supported subreddits in `{interaction.guild.name}`: {subreddits}")
+        
+    @tree.command(name="subreddit_remove", description="Removes a subreddit. Use the subreddit name, not the whole link!")
+    async def subreddit_remove(interaction: discord.Interaction, subreddit_name: str):
 
         subreddit_added = subreddit_supported(guild_id=(interaction.guild.id), subreddit_name=subreddit_name)
 
@@ -87,8 +94,8 @@ def commands_init(client):
 
         await interaction.response.send_message(f"Removed subreddit: {subreddit_name}")
 
-    @tree.command(name="add_subreddit", description="Adds a new subreddit. Use the subreddit name, not the whole link!", guild=guild_id)
-    async def add_subreddit(interaction: discord.Interaction, subreddit_name: str):
+    @tree.command(name="subreddit_add", description="Adds a new subreddit. Use the subreddit name, not the whole link!")
+    async def subreddit_add(interaction: discord.Interaction, subreddit_name: str):
 
         subreddit_added = subreddit_supported(guild_id=(interaction.guild.id), subreddit_name=subreddit_name)
 
@@ -117,9 +124,13 @@ def commands_init(client):
 
         await interaction.response.send_message(f"Added a new subreddit: {subreddit_name}")
 
-    @tree.command(name="meme", description="Sends a meme from a subreddit (if supported).", guild=guild_id)
+    @tree.command(name="meme", description="Sends a meme from a subreddit (if supported).")
     async def meme(interaction: discord.Interaction, subreddit_name: str):
-        
+
+        # if (interaction.is_user_integration):
+            # if (subreddit_name not in guild_reddit_default_subreddits):
+                # raise Exception(f"User installs are limited to: {guild_reddit_default_subreddits}. Please use one of them instead or alternatively add the bot to your server.")
+
         subreddit_added = subreddit_supported(guild_id=(interaction.guild.id), subreddit_name=subreddit_name)
 
         if (not subreddit_added):
@@ -143,13 +154,22 @@ def commands_init(client):
         meme_link = format_reddit_link(post_id=random_meme[0])
 
         await guild_reddit_embed_send(subreddit_name=subreddit_name, interaction=interaction, random_meme=random_meme, meme_link=meme_link)
+        
+    @tree.command(name="update", description="Sends instructions on how to update the user installed Cat Memes app.")
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+    async def update(interaction: discord.Interaction):
+
+        await interaction.response.send_message(content=f"To update, reauthorize the Cat Memes app.", ephemeral=True)
 
     @sync_commands.error
-    @update_subreddit.error
-    @remove_subreddit.error
-    @add_subreddit.error
+    @subreddit_update.error
+    @subreddit_list.error
+    @subreddit_remove.error
+    @subreddit_add.error
     @meme.error
     @cat_meme.error
+    @update.error
     async def say_error(interaction : discord.Interaction, error):
         await interaction.response.send_message(error, ephemeral=True)
 
