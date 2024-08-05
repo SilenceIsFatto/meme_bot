@@ -23,8 +23,6 @@ from functions.main import start_reddit_instance
 from functions.get_meme import subreddit_supported, grab_cat_meme, format_reddit_link
 from functions.get_meme import get_subreddits, get_settings, get_submissions_thread
 
-from commands_user import commands_user
-
 def commands_init(client):
 
     tree = app_commands.CommandTree(client)
@@ -47,13 +45,13 @@ def commands_init(client):
     @tree.command(name="subreddit_update", description="Refreshes posts from a subreddit. Use the subreddit name, not the whole link!")
     async def subreddit_update(interaction: discord.Interaction, subreddit_name: str):
 
+        if (subreddit_name in ["https://", "reddit.com"]):
+            raise Exception("Don't give the whole link, only provide the subreddit name!")
+
         subreddit_added = subreddit_supported(guild_id=(interaction.guild.id), subreddit_name=subreddit_name)
 
         if (not subreddit_added):
             raise Exception("This subreddit hasn't been added.")
-
-        if (subreddit_name in ["https://", "reddit.com"]):
-            raise Exception("Don't give the whole link, only provide the subreddit name!")
 
         subreddit = start_reddit_instance(subreddit_name=subreddit_name)
         get_submissions_thread(subreddit=subreddit)
@@ -65,18 +63,18 @@ def commands_init(client):
 
         subreddits = get_subreddits(guild_id=(interaction.guild.id))
 
-        await interaction.response.send_message(f"Supported subreddits in `{interaction.guild.name}`: {subreddits}")
+        await interaction.response.send_message(f"Supported subreddits in '{interaction.guild.name}': `{subreddits}`")
         
     @tree.command(name="subreddit_remove", description="Removes a subreddit. Use the subreddit name, not the whole link!")
     async def subreddit_remove(interaction: discord.Interaction, subreddit_name: str):
+
+        if (subreddit_name in ["https://", "reddit.com"]):
+            raise Exception("Don't give the whole link, only provide the subreddit name!")
 
         subreddit_added = subreddit_supported(guild_id=(interaction.guild.id), subreddit_name=subreddit_name)
 
         if (not subreddit_added):
             raise Exception("This subreddit has not been added. Try adding it with /add_subreddit")
-
-        if (subreddit_name in ["https://", "reddit.com"]):
-            raise Exception("Don't give the whole link, only provide the subreddit name!")
 
         # has to be str or else the json will break eventually
         guild_id = str(interaction.guild.id)
@@ -84,8 +82,10 @@ def commands_init(client):
         subreddits = get_subreddits(guild_id)
         subreddits.remove(subreddit_name)
 
+        guild_name = interaction.guild.name
         dict = {
             guild_id: {
+                "name": guild_name,
                 "subreddits": subreddits
             }
         }
@@ -97,13 +97,14 @@ def commands_init(client):
     @tree.command(name="subreddit_add", description="Adds a new subreddit. Use the subreddit name, not the whole link!")
     async def subreddit_add(interaction: discord.Interaction, subreddit_name: str):
 
+        # Can make this its own function, cba repeating it in future
+        if (subreddit_name in ["https://", "reddit.com"]):
+            raise Exception("Don't give the whole link, only provide the subreddit name!")
+
         subreddit_added = subreddit_supported(guild_id=(interaction.guild.id), subreddit_name=subreddit_name)
 
         if (subreddit_added):
             raise Exception("This subreddit has already been added.")
-
-        if (subreddit_name in ["https://", "reddit.com"]):
-            raise Exception("Don't give the whole link, only provide the subreddit name!")
 
         # has to be str or else the json will break eventually
         guild_id = str(interaction.guild.id)
@@ -111,8 +112,10 @@ def commands_init(client):
         subreddits = get_subreddits(guild_id)
         subreddits.append(subreddit_name)
 
+        guild_name = interaction.guild.name
         dict = {
             guild_id: {
+                "name": guild_name,
                 "subreddits": subreddits
             }
         }
@@ -124,8 +127,8 @@ def commands_init(client):
 
         await interaction.response.send_message(f"Added a new subreddit: {subreddit_name}")
 
-    @tree.command(name="meme", description="Sends a meme from a subreddit (if supported).")
-    async def meme(interaction: discord.Interaction, subreddit_name: str):
+    @tree.command(name="image", description="Sends a random image from a provided subreddit (if supported).")
+    async def image(interaction: discord.Interaction, subreddit_name: str):
 
         # if (interaction.is_user_integration):
             # if (subreddit_name not in guild_reddit_default_subreddits):
@@ -142,9 +145,9 @@ def commands_init(client):
 
         await guild_reddit_embed_send(subreddit_name=subreddit_name, interaction=interaction, random_meme=random_meme, meme_link=meme_link)
 
-    @tree.command(name="cat_meme", description="Sends a cat meme.")
+    @tree.command(name="image_cat", description="Sends a random cat image from r/Catmemes.")
     @app_commands.allowed_installs(guilds=True, users=True)
-    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True) 
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def cat_meme(interaction: discord.Interaction):
 
         subreddit_name = "Catmemes"
@@ -160,14 +163,14 @@ def commands_init(client):
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def update(interaction: discord.Interaction):
 
-        await interaction.response.send_message(content=f"To update, reauthorize the Cat Memes app.", ephemeral=True)
+        await interaction.response.send_message(content=f"Updates should happen automatically. If they don't happen, reauthorize the Cat Memes app.", ephemeral=True)
 
     @sync_commands.error
     @subreddit_update.error
     @subreddit_list.error
     @subreddit_remove.error
     @subreddit_add.error
-    @meme.error
+    @image.error
     @cat_meme.error
     @update.error
     async def say_error(interaction : discord.Interaction, error):
