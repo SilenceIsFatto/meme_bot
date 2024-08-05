@@ -131,7 +131,7 @@ def commands_init(client):
 
         await guild_reddit_embed_send(subreddit_name=subreddit_name, interaction=interaction, random_meme=random_meme, meme_link=meme_link)
 
-    @tree.command(name="cat_meme", description="Sends a cat meme.", guild=guild_id)
+    @tree.command(name="cat_meme", description="Sends a cat meme.")
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True) 
     async def cat_meme(interaction: discord.Interaction):
