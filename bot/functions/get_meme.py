@@ -78,14 +78,13 @@ def get_submissions_thread(subreddit=None, submission_amount=1000):
     thread_function(target=get_submissions, args=(subreddit, submission_amount), start_thread=True)
 
 def get_submissions(subreddit=None, submission_amount=1000):
-    submissions = 0
     subreddit_submissions = subreddit.top(time_filter="all", limit=None)
-
     subreddit_name = str(subreddit)
 
+    submissions = 0
     submissions_dict = {subreddit_name: {}}
         
-    for subreddit_submission in subreddit_submissions:      
+    for subreddit_submission in subreddit_submissions:  
         sub_id = subreddit_submission.id
         title = subreddit_submission.title
         url = subreddit_submission.url
@@ -157,7 +156,7 @@ async def scheduled_cat_meme(client, guild_channel=None):
     random_meme = grab_cat_meme(subreddit="Catmemes")
 
     meme_link = format_reddit_link(post_id=random_meme[0])
-    message = f"Reddit - [{random_meme[1]}]({random_meme[2]}) - [Link](<{meme_link}>)"
+    message = f"[{random_meme[1]}]({random_meme[2]}) - [Link](<{meme_link}>)"
 
     await channel.send(message)
     log_message(-1, f"sent {message}")

@@ -56,7 +56,8 @@ class aclient(discord.Client):
             # await meme_post_loop()
         except Exception as exp:
             log_message(-1, (f"Something went wrong! {exp}"))
-        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='Hunting Cat Memes'))
+            
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='For Cat Memes'))
 
 client = aclient()
 tree = commands_init(client)

@@ -5,6 +5,8 @@ from discord import ui
 
 import sys
 
+from config import guild_reddit_link, guild_reddit_embed_send
+
 from functions.get_meme import format_reddit_link
 
 from typing import Literal
@@ -29,18 +31,20 @@ def commands_user(client, tree):
 
         meme_link = format_reddit_link(post_id=random_meme[0])
 
-        await interaction.response.send_message(f"Reddit - [{random_meme[1]}]({random_meme[2]}) - [Link](<{meme_link}>)")
+        await guild_reddit_embed_send(subreddit_name=subreddit_name, interaction=interaction, random_meme=random_meme, meme_link=meme_link)
 
     @tree.command(name="user_send_cat_meme")
     @app_commands.allowed_installs(guilds=False, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True) 
     async def user_send_cat_meme(interaction: discord.Interaction) -> None:
+
+        subreddit_name = "Catmemes"
         
-        random_meme = grab_cat_meme(subreddit="Catmemes")
+        random_meme = grab_cat_meme(subreddit=subreddit_name)
 
         meme_link = format_reddit_link(post_id=random_meme[0])
 
-        await interaction.response.send_message(f"Reddit - [{random_meme[1]}]({random_meme[2]}) - [Link](<{meme_link}>)")
+        await guild_reddit_embed_send(subreddit_name=subreddit_name, interaction=interaction, random_meme=random_meme, meme_link=meme_link)
     
     @user_send_meme.error
     @user_send_cat_meme.error
