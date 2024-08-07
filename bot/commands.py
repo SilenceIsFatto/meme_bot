@@ -33,8 +33,6 @@ def commands_init(client):
 
     tree = app_commands.CommandTree(client)
 
-    # commands_user(client=client, tree=tree)
-
     @tree.command(name="sync_commands", description="Syncs the command tree.", guild=guild_id)
     @app_commands.check(is_admin)
     async def sync_commands(interaction: discord.Interaction, guild_only: bool = False):
@@ -166,9 +164,35 @@ def commands_init(client):
     @tree.command(name="image_cat", description="Sends a random cat image from r/Catmemes.")
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-    async def cat_meme(interaction: discord.Interaction):
+    async def image_cat(interaction: discord.Interaction):
 
         subreddit_name = "Catmemes"
+
+        random_meme = grab_cat_meme(subreddit=subreddit_name)
+
+        meme_link = format_reddit_link(post_id=random_meme[0])
+
+        await guild_reddit_embed_send(subreddit_name=subreddit_name, interaction=interaction, random_meme=random_meme, meme_link=meme_link)
+
+    @tree.command(name="image_dog", description="Sends a random dog image from r/dogmemes.")
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+    async def image_dog(interaction: discord.Interaction):
+
+        subreddit_name = "Dogmemes"
+
+        random_meme = grab_cat_meme(subreddit=subreddit_name)
+
+        meme_link = format_reddit_link(post_id=random_meme[0])
+
+        await guild_reddit_embed_send(subreddit_name=subreddit_name, interaction=interaction, random_meme=random_meme, meme_link=meme_link)
+
+    @tree.command(name="image_capybara", description="Sends a random capybara image from r/capybara.")
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+    async def image_capybara(interaction: discord.Interaction):
+
+        subreddit_name = "capybara"
 
         random_meme = grab_cat_meme(subreddit=subreddit_name)
 
@@ -190,7 +214,9 @@ def commands_init(client):
     @subreddit_remove.error
     @subreddit_add.error
     @image.error
-    @cat_meme.error
+    @image_cat.error
+    @image_dog.error
+    @image_capybara.error
     @update.error
     async def say_error(interaction : discord.Interaction, error):
         await interaction.response.send_message(error, ephemeral=True)
