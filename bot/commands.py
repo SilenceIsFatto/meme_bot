@@ -29,6 +29,12 @@ def is_owner(interaction: discord.Interaction):
 
     return False
 
+def is_admin(interaction: discord.Interaction):
+    if (interaction.user.guild_permissions.administrator):
+        return True
+
+    return False
+
 def commands_init(client):
 
     tree = app_commands.CommandTree(client)
@@ -59,7 +65,7 @@ def commands_init(client):
         await interaction.response.send_message(f"{message}")
 
     @tree.command(name="subreddit_update", description="Refreshes posts from a subreddit. Use the subreddit name, not the whole link!")
-    @app_commands.has_permissions(administrator=True)
+    @app_commands.check(is_admin)
     async def subreddit_update(interaction: discord.Interaction, subreddit_name: str):
 
         if (subreddit_name in ["https://", "reddit.com"]):
@@ -76,7 +82,7 @@ def commands_init(client):
         await interaction.response.send_message(f"Updating memes.json with new subreddit posts: {subreddit}")
 
     @tree.command(name="subreddit_list", description="Lists this servers supported subreddits.")
-    @app_commands.has_permissions(administrator=True)
+    @app_commands.check(is_admin)
     async def subreddit_list(interaction: discord.Interaction):
 
         subreddits = get_subreddits(guild_id=(interaction.guild.id))
@@ -84,7 +90,7 @@ def commands_init(client):
         await interaction.response.send_message(f"Supported subreddits in '{interaction.guild.name}': `{subreddits}`")
         
     @tree.command(name="subreddit_remove", description="Removes a subreddit. Use the subreddit name, not the whole link!")
-    @app_commands.has_permissions(administrator=True)
+    @app_commands.check(is_admin)
     async def subreddit_remove(interaction: discord.Interaction, subreddit_name: str):
 
         if (subreddit_name in ["https://", "reddit.com"]):
@@ -114,7 +120,7 @@ def commands_init(client):
         await interaction.response.send_message(f"Removed subreddit: {subreddit_name}")
 
     @tree.command(name="subreddit_add", description="Adds a new subreddit. Use the subreddit name, not the whole link!")
-    @app_commands.has_permissions(administrator=True)
+    @app_commands.check(is_admin)
     async def subreddit_add(interaction: discord.Interaction, subreddit_name: str):
 
         # Can make this its own function, cba repeating it in future
