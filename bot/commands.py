@@ -23,7 +23,7 @@ from functions.main import start_reddit_instance
 from functions.get_meme import subreddit_supported, grab_cat_meme, format_reddit_link
 from functions.get_meme import get_subreddits, get_settings, get_submissions_thread
 
-def is_admin(interaction: discord.Interaction):
+def is_owner(interaction: discord.Interaction):
     if (interaction.user.id in [474144080801169418, 705425476142891038]):
         return True
 
@@ -34,7 +34,7 @@ def commands_init(client):
     tree = app_commands.CommandTree(client)
 
     @tree.command(name="sync_commands", description="Syncs the command tree.", guild=guild_id)
-    @app_commands.check(is_admin)
+    @app_commands.check(is_owner)
     async def sync_commands(interaction: discord.Interaction, guild_only: bool = False):
 
         if (interaction.user.id not in [474144080801169418, 705425476142891038]):
@@ -48,7 +48,7 @@ def commands_init(client):
         await interaction.response.send_message(f"Synced commands.")
 
     @tree.command(name="message", description="Sends a message.")
-    @app_commands.check(is_admin)
+    @app_commands.check(is_owner)
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def message(interaction: discord.Interaction, message: str):
@@ -59,6 +59,7 @@ def commands_init(client):
         await interaction.response.send_message(f"{message}")
 
     @tree.command(name="subreddit_update", description="Refreshes posts from a subreddit. Use the subreddit name, not the whole link!")
+    @app_commands.has_permissions(administrator=True)
     async def subreddit_update(interaction: discord.Interaction, subreddit_name: str):
 
         if (subreddit_name in ["https://", "reddit.com"]):
@@ -75,6 +76,7 @@ def commands_init(client):
         await interaction.response.send_message(f"Updating memes.json with new subreddit posts: {subreddit}")
 
     @tree.command(name="subreddit_list", description="Lists this servers supported subreddits.")
+    @app_commands.has_permissions(administrator=True)
     async def subreddit_list(interaction: discord.Interaction):
 
         subreddits = get_subreddits(guild_id=(interaction.guild.id))
@@ -82,6 +84,7 @@ def commands_init(client):
         await interaction.response.send_message(f"Supported subreddits in '{interaction.guild.name}': `{subreddits}`")
         
     @tree.command(name="subreddit_remove", description="Removes a subreddit. Use the subreddit name, not the whole link!")
+    @app_commands.has_permissions(administrator=True)
     async def subreddit_remove(interaction: discord.Interaction, subreddit_name: str):
 
         if (subreddit_name in ["https://", "reddit.com"]):
@@ -111,6 +114,7 @@ def commands_init(client):
         await interaction.response.send_message(f"Removed subreddit: {subreddit_name}")
 
     @tree.command(name="subreddit_add", description="Adds a new subreddit. Use the subreddit name, not the whole link!")
+    @app_commands.has_permissions(administrator=True)
     async def subreddit_add(interaction: discord.Interaction, subreddit_name: str):
 
         # Can make this its own function, cba repeating it in future
