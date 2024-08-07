@@ -179,7 +179,7 @@ def commands_init(client):
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def image_dog(interaction: discord.Interaction):
 
-        subreddit_name = "Dogmemes"
+        subreddit_name = "dogmemes"
 
         random_meme = grab_cat_meme(subreddit=subreddit_name)
 
