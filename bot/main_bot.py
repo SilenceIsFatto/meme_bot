@@ -3,7 +3,6 @@ from discord.ext import commands, tasks
 from discord import app_commands
 import functions.get_meme
 import os
-import subprocess
 import logging
 import asyncio
 from icecream import ic
@@ -63,7 +62,6 @@ client = aclient()
 tree = commands_init(client)
 
 write_to_file(filename=guild_lock_file, data="", type="w")
-# subprocess.Popen(f"{sys.executable} json_loop.py")
 initialise_memes()
 
 client.run(token, log_handler=handler)
