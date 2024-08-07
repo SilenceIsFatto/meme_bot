@@ -10,4 +10,4 @@ import subprocess
 
 def initialise_memes():
 
-    subprocess.Popen(f"{sys.executable} json_loop.py")
+    subprocess.Popen(f"{sys.executable} functions\\json_loop.py")
