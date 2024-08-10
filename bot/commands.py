@@ -53,7 +53,7 @@ def commands_init(client):
 
         await interaction.response.send_message(f"Synced commands.")
 
-    @tree.command(name="message", description="Sends a message.")
+    @tree.command(name="message", description="Sends a message.", guild=guild_id)
     @app_commands.check(is_owner)
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
@@ -82,7 +82,6 @@ def commands_init(client):
         await interaction.response.send_message(f"Updating memes.json with new subreddit posts: {subreddit}")
 
     @tree.command(name="subreddit_list", description="Lists this servers supported subreddits.")
-    @app_commands.check(is_admin)
     async def subreddit_list(interaction: discord.Interaction):
 
         subreddits = get_subreddits(guild_id=(interaction.guild.id))
